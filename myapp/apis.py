@@ -136,7 +136,7 @@ class UserGoalView(APIView):
                 user, token = JWT_authenticator.authenticate(request)
                 data = request.data
                 try:
-                        data['goal']
+                        data['goal_id']
                 except:
                         raise DataTypeIncorrect
                 create_user_goal(user, **data)
@@ -215,5 +215,4 @@ class TestItemView(APIView):
                         raise DataTypeIncorrect
                 d = TestItemSerializer(get_test_item(**data), many=True).data
                 
-                # d 나누는 작업 필요
                 return JsonResponse(d, safe=False)
