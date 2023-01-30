@@ -183,7 +183,7 @@ class TestItemView(APIView):
         permission_classes = [IsAuthenticated]
 
         # 검사 아이템 반환
-        def get(self, request):
+        def post(self, request):
                 user, token = JWT_authenticator.authenticate(request)
                 data = request.data
                 try:
