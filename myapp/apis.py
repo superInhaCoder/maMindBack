@@ -137,6 +137,7 @@ class UserGoalView(APIView):
                 data = request.data
                 try:
                         data['goal_id']
+                        data['category']
                 except:
                         raise DataTypeIncorrect
                 create_user_goal(user, **data)
@@ -157,7 +158,21 @@ class UserGoalView(APIView):
                 except:
                         raise DataTypeIncorrect
                 set_user_goal(user=user, **data)
-                return JsonResponse({'good': 'good'})
+                d = GoalListSerializer(get_goal_list(**data), many=True).data
+                lst = UserGoalSerializer(get_user_goal_with_success(user, 0), many=True).data
+                now = {}
+                try:
+                        for l in lst:
+                                now[l['goal']] = 1
+                        for x in d:
+                                if x['id'] in now:
+                                        x['now'] = 1
+                                else:
+                                        x['now'] = 0
+                except:
+                        raise ServiceUnavailable
+                        
+                return JsonResponse(d, safe=False)
         
 class TestListView(APIView):
         permission_classes = [IsAuthenticated]
