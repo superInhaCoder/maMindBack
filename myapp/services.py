@@ -374,7 +374,7 @@ def get_user_goal_cal(user: User):
         for c in category:
             print(c)
             to[c['id']] = c['subject']
-        cnt = {}
+        cnt = {"1": 0, "2": 0, "3": 0}
         cnt2 = {}
         for f in userGoalSet:
             if f.goal.category_id not in cnt:
