@@ -221,7 +221,7 @@ def get_user_check_cal(user: User):
 
 @transaction.atomic
 def get_user_goal_cal(user: User):
-    userGoalSet = UserGoal.objects.filter(user=user, success=1).select_related('goal', 'goal_category')
+    userGoalSet = UserGoal.objects.filter(user=user, success=1).select_related('Goal', 'GoalCategory')
     cnt = {}
     for f in userGoalSet:
         if f.goal.goal_category.subject not in cnt:
