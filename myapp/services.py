@@ -428,3 +428,4 @@ def get_goal_list_with_now(user: User, **data):
                             x['now'] = 0
     except:
             raise ServiceUnavailable
+    return now
