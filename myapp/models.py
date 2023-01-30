@@ -86,6 +86,8 @@ class GoalCategory(models.Model):
 class GoalList(models.Model):
     category        = models.ForeignKey(GoalCategory, on_delete=models.CASCADE, verbose_name="카테고리")
     subject         = models.CharField(max_length=100, editable=False, null=False, blank=False, verbose_name="주제")
+    content         = models.CharField(max_length=100, editable=False, null=False, blank=False, verbose_name="부주제")
+    step            = models.CharField(max_length=100, editable=False, null=False, blank=False, verbose_name="단계")
     mission1        = models.CharField(max_length=100, editable=False, null=False, blank=False, verbose_name="미션 1")
     mission2        = models.CharField(max_length=100, editable=False, null=False, blank=False, verbose_name="미션 2")
     mission3        = models.CharField(max_length=100, editable=False, null=False, blank=False, verbose_name="미션 3")

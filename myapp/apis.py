@@ -122,7 +122,7 @@ class UserCheckCalView(APIView):
 class UserGoalCalView(APIView):
         permission_classes = [IsAuthenticated]
 
-        # 유저 검사 누적 결과
+        # 유저 목표 누적 결과
         def get(self, request):
                 user, token = JWT_authenticator.authenticate(request)
                 userGoalCalDict = get_user_goal_cal(user)
