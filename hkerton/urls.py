@@ -1,7 +1,7 @@
 from django.urls import include, path
 from django.contrib import admin
 from rest_framework import routers
-from myapp.apis import GoogleLoginView, MyView, UserView, TestLoginView, UserCheckView, TestListView, UserCheckCalView, TestItemView
+from myapp.apis import GoogleLoginView, MyView, UserView, TestLoginView, UserGoalView, UserCheckView, TestListView, UserCheckCalView, TestItemView
 from myapp.apis import GoalListView, GoalCategoryView
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
@@ -18,7 +18,7 @@ urlpatterns = [
     path('login/test', TestLoginView.as_view()),
     path('user', UserView.as_view()),
     path('user/check', UserCheckView.as_view()),
-    path('user/goal', UserCheckView.as_view()),
+    path('user/goal', UserGoalView.as_view()),
     path('testlist', TestListView.as_view()),
     path('testitem', TestItemView.as_view()),
     path('goallist', GoalListView.as_view()),

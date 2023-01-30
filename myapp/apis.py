@@ -96,15 +96,7 @@ class UserCheckView(APIView):
         # 유저 체크리스트 반환
         def get(self, request):
                 user, token = JWT_authenticator.authenticate(request)
-                data = request.data
-                try:
-                        # 날짜 형식 맞는지 확인 해야함
-                        data['startDate']
-                        data['endDate']
-                except:
-                        raise DataTypeIncorrect
-                print(get_user_check(user, **data))
-                return JsonResponse(UserCheckSerializer(get_user_check(user, **data), many=True).data, safe=False)
+                return JsonResponse(UserCheckSerializer(get_user_check(user), many=True).data, safe=False)
 
         # 유저 체크리스트 업데이트
         def patch(self, request):
