@@ -8,7 +8,7 @@ from django.http import HttpResponse, JsonResponse
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from myapp.services import jwt_login, user_get_or_create, set_user_profile, get_user_check, create_user_check, get_test_list
 from myapp.services import set_user_check, get_test_item, get_user_check_cal, get_goal_list, get_goal_category, create_user_goal
-from myapp.services import set_user_goal, get_user_goal, get_user_goal_with_success
+from myapp.services import set_user_goal, get_user_goal, get_user_goal_with_success, get_user_goal_cal
 from myapp.exceptions import ServiceUnavailable, DataTypeIncorrect, GoogleAuthError
 from django.core import serializers
 import requests, json, datetime, jwt
@@ -119,6 +119,15 @@ class UserCheckCalView(APIView):
                 userCheckCalDict = get_user_check_cal(user)
                 return JsonResponse(userCheckCalDict, safe=False)
         
+class UserGoalCalView(APIView):
+        permission_classes = [IsAuthenticated]
+
+        # 유저 검사 누적 결과
+        def get(self, request):
+                user, token = JWT_authenticator.authenticate(request)
+                userGoalCalDict = get_user_goal_cal(user)
+                return JsonResponse(userGoalCalDict, safe=False)
+        
 class UserGoalView(APIView):
         permission_classes = [IsAuthenticated]
 
@@ -180,13 +189,16 @@ class GoalListView(APIView):
                 d = GoalListSerializer(get_goal_list(**data), many=True).data
                 lst = UserGoalSerializer(get_user_goal_with_success(user, 0), many=True).data
                 now = {}
-                for l in lst:
-                        now[l['goal']] = 1
-                for x in d:
-                        if x['id'] in now:
-                                x['now'] = 1
-                        else:
-                                x['now'] = 0
+                try:
+                        for l in lst:
+                                now[l['goal']] = 1
+                        for x in d:
+                                if x['id'] in now:
+                                        x['now'] = 1
+                                else:
+                                        x['now'] = 0
+                except:
+                        raise ServiceUnavailable
                         
                 return JsonResponse(d, safe=False)
         
