@@ -8,7 +8,7 @@ from django.http import HttpResponse, JsonResponse
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from myapp.services import jwt_login, user_get_or_create, set_user_profile, get_user_check, create_user_check, get_test_list
 from myapp.services import set_user_check, get_test_item, get_user_check_cal, get_goal_list, get_goal_category, create_user_goal
-from myapp.services import set_user_goal, get_user_goal, get_user_goal_with_success, get_user_goal_cal
+from myapp.services import set_user_goal, get_user_goal, get_user_goal_with_success, get_user_goal_cal, get_goal_list_with_now
 from myapp.exceptions import ServiceUnavailable, DataTypeIncorrect, GoogleAuthError
 from django.core import serializers
 import requests, json, datetime, jwt
@@ -142,21 +142,7 @@ class UserGoalView(APIView):
                         raise DataTypeIncorrect
                 d = {'goal_id': data['goal_id']}
                 create_user_goal(user, **d)
-                d = GoalListSerializer(get_goal_list(**data), many=True).data
-                lst = UserGoalSerializer(get_user_goal_with_success(user, 0), many=True).data
-                now = {}
-                try:
-                        for l in lst:
-                                now[l['goal']] = 1
-                        for x in d:
-                                if x['id'] in now:
-                                        x['now'] = 1
-                                else:
-                                        x['now'] = 0
-                except:
-                        raise ServiceUnavailable
-                        
-                return JsonResponse(d, safe=False)
+                return JsonResponse(get_goal_list_with_now(user, **data), safe=False)
 
         # 유저 목표 반환
         def get(self, request):
@@ -203,21 +189,8 @@ class GoalListView(APIView):
                         data['category']
                 except:
                         raise DataTypeIncorrect
-                d = GoalListSerializer(get_goal_list(**data), many=True).data
-                lst = UserGoalSerializer(get_user_goal_with_success(user, 0), many=True).data
-                now = {}
-                try:
-                        for l in lst:
-                                now[l['goal']] = 1
-                        for x in d:
-                                if x['id'] in now:
-                                        x['now'] = 1
-                                else:
-                                        x['now'] = 0
-                except:
-                        raise ServiceUnavailable
                         
-                return JsonResponse(d, safe=False)
+                return JsonResponse(get_goal_list_with_now(user, **data), safe=False)
         
 class TestItemView(APIView):
         permission_classes = [IsAuthenticated]

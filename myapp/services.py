@@ -5,7 +5,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from myapp.models import User, UserCheck, UserGoal, SocialPlatform, TestList, TestItem, GoalList, GoalCategory
 from datetime import datetime
 from myapp.exceptions import DataTypeIncorrect, ServiceUnavailable
-from myapp.serializers import GoalCategorySerializer
+from myapp.serializers import GoalCategorySerializer, GoalListSerializer, UserGoalSerializer
 
 @transaction.atomic
 def create_super_user():
@@ -413,3 +413,18 @@ def set_user_goal(user: User, **data):
             userGoal.success = data['update']['success']
     except: raise DataTypeIncorrect
     userGoal.save()
+    
+def get_goal_list_with_now(user: User, **data):
+    d = GoalListSerializer(get_goal_list(**data), many=True).data
+    lst = UserGoalSerializer(get_user_goal_with_success(user, 0), many=True).data
+    now = {}
+    try:
+            for l in lst:
+                    now[l['goal']] = 1
+            for x in d:
+                    if x['id'] in now:
+                            x['now'] = 1
+                    else:
+                            x['now'] = 0
+    except:
+            raise ServiceUnavailable
