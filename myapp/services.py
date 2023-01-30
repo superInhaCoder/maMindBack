@@ -224,6 +224,7 @@ def get_user_goal_cal(user: User):
     userGoalSet = UserGoal.objects.filter(user=user, success=1).select_related('goal')
     cnt = {}
     for f in userGoalSet:
+        print(f.values())
         if f.subject not in cnt:
             cnt[f.subject] = 0
         cnt[f.subject] += 1
