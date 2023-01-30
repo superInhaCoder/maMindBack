@@ -181,7 +181,7 @@ class GoalListView(APIView):
                 lst = UserGoalSerializer(get_user_goal_with_success(user, 0), many=True).data
                 now = {}
                 for l in lst:
-                        now[l['.goal']] = 1
+                        now[l['goal']] = 1
                 for x in d:
                         if x['id'] in now:
                                 x['now'] = 1
