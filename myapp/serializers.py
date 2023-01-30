@@ -11,7 +11,7 @@ class UserCheckSerializer(serializers.ModelSerializer):
         model = UserCheck
         fields = "__all__"
         
-class UserGoalkSerializer(serializers.ModelSerializer):
+class UserGoalSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserGoal
         fields = "__all__"

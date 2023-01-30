@@ -1,7 +1,7 @@
 from django.contrib.auth.models import Group
 from rest_framework import viewsets
 from rest_framework import permissions
-from myapp.serializers import UserSerializer, UserCheckSerializer, UserGoalkSerializer, TestListSerializer, TestItemSerializer, GoalListSerializer, GoalCategorySerializer
+from myapp.serializers import UserSerializer, UserCheckSerializer, UserGoalSerializer, TestListSerializer, TestItemSerializer, GoalListSerializer, GoalCategorySerializer
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.views import APIView
 from django.http import HttpResponse, JsonResponse
@@ -136,7 +136,7 @@ class UserGoalView(APIView):
         # 유저 목표 반환
         def get(self, request):
                 user, token = JWT_authenticator.authenticate(request)
-                return JsonResponse(UserCheckSerializer(get_user_goal(user), many=True).data, safe=False)
+                return JsonResponse(UserGoalSerializer(get_user_goal(user), many=True).data, safe=False)
 
         # 유저 목표 업데이트
         def patch(self, request):
@@ -147,7 +147,7 @@ class UserGoalView(APIView):
                         data['update']
                 except:
                         raise DataTypeIncorrect
-                set_user_goal(user=user, **request.data)
+                set_user_goal(user=user, **data)
                 return JsonResponse({'good': 'good'})
         
 class TestListView(APIView):

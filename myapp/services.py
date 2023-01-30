@@ -387,16 +387,15 @@ def set_user_check(user: User, **data):
 
 @transaction.atomic
 def get_user_goal(user: User, **data) -> bool:
-    UserGoalSet = UserGoal.objects.filter(user=user)
+    print(33)
+    UserGoalSet = UserGoal.objects.filter(user_id=user)
     return UserGoalSet
 
 @transaction.atomic
 def set_user_goal(user: User, **data):
-    userGoal = get_user_goal(user)
+    userGoal = UserGoal.objects.get(id=data['id'])
     try:
-        if 'content' in data['update']:
-            userGoal.value = data['update']['content']
         if 'success' in data['update']:
-            userGoal.value = data['update']['success']
+            userGoal.success = data['update']['success']
     except: raise DataTypeIncorrect
     userGoal.save()
