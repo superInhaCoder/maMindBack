@@ -8,6 +8,7 @@ from django.http import HttpResponse, JsonResponse
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from myapp.services import jwt_login, user_get_or_create, set_user_profile, get_user_check, create_user_check, get_test_list
 from myapp.services import set_user_check, get_test_item, get_user_check_cal, get_goal_list, get_goal_category, create_user_goal
+from myapp.services import set_user_goal, get_user_goal
 from myapp.exceptions import ServiceUnavailable, DataTypeIncorrect, GoogleAuthError
 from django.core import serializers
 import requests, json, datetime, jwt
@@ -135,7 +136,7 @@ class UserGoalView(APIView):
         # 유저 목표 반환
         def get(self, request):
                 user, token = JWT_authenticator.authenticate(request)
-                return JsonResponse(UserCheckSerializer(get_user_check(user), many=True).data, safe=False)
+                return JsonResponse(UserCheckSerializer(get_user_goal(user), many=True).data, safe=False)
 
         # 유저 목표 업데이트
         def patch(self, request):
@@ -146,7 +147,7 @@ class UserGoalView(APIView):
                         data['update']
                 except:
                         raise DataTypeIncorrect
-                set_user_check(user=user, **request.data)
+                set_user_goal(user=user, **request.data)
                 return JsonResponse({'good': 'good'})
         
 class TestListView(APIView):
@@ -155,7 +156,6 @@ class TestListView(APIView):
         # 검사 목록 반환
         def get(self, request):
                 user, token = JWT_authenticator.authenticate(request)
-                print(type(TestListSerializer(get_test_list(), many=True).data))
                 return JsonResponse(TestListSerializer(get_test_list(), many=True).data, safe=False)
         
 class GoalCategoryView(APIView):

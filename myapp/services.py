@@ -81,6 +81,10 @@ def init_test3():
 def init_test4():
     u = UserCheck(value='1,2,4,3,0,2,3,1,0', test_list_id=1, user_id='e83b320fafff4838ba37b89743f6cb89')
     u.save()
+    
+def init_test5():
+    u = UserCheck(value='1,2,4,3,0,2,3,1,0,1,2,4,3,0,2,3,1,0,1,2,4,3,0,2,3,1,0,3,2,2', test_list_id=2, user_id='e83b320fafff4838ba37b89743f6cb89')
+    u.save()
 
 @transaction.atomic
 def user_create_superuser(id, password=None, **extra_fields) -> User:
@@ -376,14 +380,14 @@ def get_user_check_cal(user: User):
 def set_user_check(user: User, **data):
     userGoal = UserGoal(id=data['id'])
     try:
-        if 'success' in data['update']:
-            userGoal.success = data['update']['success']
+        if 'value' in data['update']:
+            userGoal.success = data['update']['value']
     except: raise DataTypeIncorrect
     userGoal.save()
 
 @transaction.atomic
 def get_user_goal(user: User, **data) -> bool:
-    UserGoalSet = UserGoal.objects.filter(user=user, selected_date__range=[data['startDate'], data['endDate']])
+    UserGoalSet = UserGoal.objects.filter(user=user)
     return UserGoalSet
 
 @transaction.atomic
