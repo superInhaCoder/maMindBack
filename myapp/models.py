@@ -46,53 +46,102 @@ class User(AbstractUser):
         swappable = 'AUTH_USER_MODEL'
         verbose_name = '사용자'
         verbose_name_plural = '사용자'
-
-    '''
-    @property
-    def name(self):
-        if not self.last_name:
-            return self.first_name.capitalize()
-        return f'{self.first_name.capitalize()} {self.last_name.capitalize()}'
-    '''
         
-class CheckList(models.Model):
+class Doctor(models.Model):
+    id              = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, db_index=True, verbose_name="UUID")  
+    name            = models.CharField(max_length=64, null=False, blank=False, default='', verbose_name="이름")
+    content         = models.TextField(max_length=1000, verbose_name="내용", default='')
+    date_joined     = models.DateTimeField(default=timezone.now, verbose_name="가입 날짜")
+    last_joined     = models.DateTimeField(default=timezone.now, verbose_name="마지막 로그인")
+
+    def __str__(self):
+        return str(self.name)
+
+    class Meta:
+        db_table = "doctor"
+        verbose_name = '의사'
+        verbose_name_plural = '의사'
+
+class TestList(models.Model):
+    subject = models.CharField(max_length=100, editable=False, null=False, blank=False, verbose_name="검사 이름")
+    content = models.CharField(max_length=100, editable=False, null=False, blank=False, verbose_name="검사 설명")
+    count   = models.IntegerField(default=10, verbose_name="검사 항목 수")
+    
+    def __str__(self):
+        return self.subject
+
+    class Meta:
+        db_table = "test_list"
+        verbose_name = '검사 목록'
+        verbose_name_plural = '검사 목록'
+        
+class GoalCategory(models.Model):
+    subject = models.CharField(max_length=100, editable=False, null=False, blank=False, verbose_name="주제")
+
+    class Meta:
+        db_table = "goal_category"
+        verbose_name = '목표 카테고리'
+        verbose_name_plural = '목표 카테고리'
+        
+class GoalList(models.Model):
+    category        = models.ForeignKey(GoalCategory, on_delete=models.CASCADE, verbose_name="카테고리")
+    subject         = models.CharField(max_length=100, editable=False, null=False, blank=False, verbose_name="주제")
+    mission1        = models.CharField(max_length=100, editable=False, null=False, blank=False, verbose_name="미션 1")
+    mission2        = models.CharField(max_length=100, editable=False, null=False, blank=False, verbose_name="미션 2")
+    mission3        = models.CharField(max_length=100, editable=False, null=False, blank=False, verbose_name="미션 3")
+    
+    def __str__(self):
+        return self.subject
+    
+    class Meta:
+        db_table = "goal_list"
+        verbose_name = '목표 목록'
+        verbose_name_plural = '목표 목록'
+        
+class UserGoal(models.Model):
+    user            = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="사용자")
+    goal            = models.ForeignKey(GoalList, on_delete=models.CASCADE, verbose_name="카테고리")
+    success         = models.BooleanField(default=0, verbose_name="달성 여부")
+    
+    class Meta:
+        db_table = "user_goal"
+        verbose_name = '사용자 목표'
+        verbose_name_plural = '사용자 목표'
+        ordering = ['success']
+        
+class TestItem(models.Model):
     content         = models.TextField(max_length=200, verbose_name="내용", default='')
-    type            = models.IntegerField(default=0, verbose_name="타입")
+    type            = models.ForeignKey(TestList, on_delete=models.CASCADE, verbose_name="검사 종류") # 무조건 social_platform에 1개이상 있어야함.
 
     def __str__(self):
         return self.content
     
     class Meta:
-        db_table = "check_list"
-        verbose_name = '체크 리스트 목록'
-        verbose_name_plural = '체크 리스트 목록'
+        db_table = "test_item"
+        verbose_name = '검사 종류'
+        verbose_name_plural = '검사 종류'
     
 class UserCheck(models.Model):
-    selected_date   = models.DateTimeField(default=timezone.now, verbose_name="선택 날짜")
-    check_list      = models.ForeignKey(CheckList, on_delete=models.CASCADE, verbose_name="선택된 질문")
+    selected_date   = models.DateField(default=timezone.now, verbose_name="선택 날짜")
+    test_list       = models.ForeignKey(TestList, on_delete=models.CASCADE, verbose_name="선택된 질문")
     user            = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="사용자")
-    value           = models.IntegerField(default=0, verbose_name="값")
+    value           = models.TextField(max_length=200, verbose_name="값", default='')
 
-    # def __str__(self):
-    #     return self.user.name
+    def __str__(self):
+        return self.user.name
     
     class Meta:
         db_table = "user_check"
         verbose_name = '사용자 체크리스트'
         verbose_name_plural = '사용자 체크리스트'
         ordering = ['-selected_date']
-    
-class UserGoal(models.Model):
-    content         = models.TextField(max_length=200, verbose_name="내용", default='')
-    created_date    = models.DateTimeField(default=timezone.now, verbose_name="생성 날짜")
+        
+class Consult(models.Model):
     user            = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="사용자")
-    success         = models.BooleanField(default=0, verbose_name="달성 여부")
+    Doctor          = models.ForeignKey(Doctor, on_delete=models.CASCADE, verbose_name="의사")
+    content         = models.TextField(max_length=200, verbose_name="내용", default='')
 
-    def __str__(self):
-        return self.user.first_name
-    
     class Meta:
-        db_table = "user_goal"
-        verbose_name = '사용자 목표'
-        verbose_name_plural = '사용자 목표'
-        ordering = ['-created_date', 'success']
+        db_table = "consult"
+        verbose_name = '상담'
+        verbose_name_plural = '상담'

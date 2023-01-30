@@ -3,7 +3,7 @@ from django.contrib.auth.admin import UserAdmin as DjangoUserAdmin
 
 from django.utils.translation import gettext_lazy as _
 
-from myapp.models import SocialPlatform, User, CheckList, UserCheck, UserGoal
+from myapp.models import SocialPlatform, User, TestList, UserCheck, UserGoal, TestItem
 from django.contrib.auth.models import Group
 
 admin.site.unregister(Group)
@@ -65,8 +65,8 @@ class UserAdmin(admin.ModelAdmin):
     readonly_fields = ('full_name', 'email', 'social', 'id', 'sub', 'password', 'is_staff', 'is_superuser', 'last_login', 'date_joined', 'date_birth',)
     '''
     
-@admin.register(CheckList)
-class CheckListAdmin(admin.ModelAdmin):
+@admin.register(TestList)
+class TestListAdmin(admin.ModelAdmin):
     actions = None
     list_display = ('id', 'content')
     ordering = ('id',)
@@ -74,10 +74,14 @@ class CheckListAdmin(admin.ModelAdmin):
 @admin.register(UserCheck)
 class UserCheckAdmin(admin.ModelAdmin):
     actions = None
-    list_display = ('id', 'user', 'check_list_id', 'selected_date', 'value')
+    list_display = ('id', 'user', 'test_list_id', 'selected_date', 'value')
     ordering = ('id',)
     pass
     
 @admin.register(UserGoal)
 class UserGoalAdmin(admin.ModelAdmin):
+    pass
+
+@admin.register(TestItem)
+class TestItemAdmin(admin.ModelAdmin):
     pass
