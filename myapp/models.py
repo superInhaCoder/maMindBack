@@ -57,6 +57,7 @@ class User(AbstractUser):
         
 class CheckList(models.Model):
     content         = models.TextField(max_length=200, verbose_name="내용", default='')
+    type            = models.IntegerField(default=0, verbose_name="타입")
 
     def __str__(self):
         return self.content

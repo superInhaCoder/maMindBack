@@ -235,11 +235,5 @@ def set_user_profile(*, user: User, **data):
     
 @transaction.atomic
 def get_user_checklist(*, user: User, **data) -> bool:
-    userCheckList = UserCheck.objects.get(user_id=user.id)
-    try:
-        if 'is_active' in data['update']:
-            user.is_active = data['update']['is_active']
-        if 'name' in data['update']:
-            user.full_name = data['update']['name']
-    except: raise DataTypeIncorrect
-    user.save()
+    userCheck = UserCheck.objects.get(user_id=user.id)
+    return userCheck
