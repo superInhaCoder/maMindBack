@@ -85,6 +85,11 @@ def init_test4():
 def init_test5():
     u = UserCheck(value='1,2,4,3,0,2,3,1,0,1,2,4,3,0,2,3,1,0,1,2,4,3,0,2,3,1,0,3,2,2', test_list_id=2, user_id='e83b320fafff4838ba37b89743f6cb89')
     u.save()
+    
+def init_test6():
+    for i in range(17):
+        t = TestItem(content=f'테스트 {i+4}', type_id=2)
+        t.save()
 
 @transaction.atomic
 def user_create_superuser(id, password=None, **extra_fields) -> User:
