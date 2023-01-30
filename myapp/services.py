@@ -4,7 +4,8 @@ from django.core.management.utils import get_random_secret_key
 from rest_framework_simplejwt.tokens import RefreshToken
 from myapp.models import User, UserCheck, UserGoal, SocialPlatform, TestList, TestItem, GoalList, GoalCategory
 from datetime import datetime
-from myapp.exceptions import DataTypeIncorrect
+from myapp.exceptions import DataTypeIncorrect, ServiceUnavailable
+from myapp.serializers import GoalCategorySerializer
 
 @transaction.atomic
 def create_super_user():
@@ -195,39 +196,53 @@ def get_user_check(user: User):
 
 @transaction.atomic
 def get_user_check_cal(user: User):
-    userCheckSet = UserCheck.objects.filter(user=user).select_related('test_list')
-    cal = {'우울 테스트': 0, '스트레스 테스트': 0, '불안 테스트': 0}
-    cnt = {'우울 테스트': 0, '스트레스 테스트': 0, '불안 테스트': 0}
-    for f in userCheckSet:
-        v = list(map(int, f.value.split(',')))
-        if f.test_list.id == 1:
-            cal['우울 테스트'] += (v[0] + v[1] + v[2]) * 10
-            cnt['우울 테스트'] += 1
-            cal['스트레스 테스트'] += (v[3] + v[4] + v[5]) * 10
-            cnt['스트레스 테스트'] += 1
-            cal['불안 테스트'] += (v[6] + v[7] + v[8]) * 10
-            cnt['불안 테스트'] += 1
-        else:
-            if f.test_list.subject not in cal:
-                cal[f.test_list.subject] = 0
-                cnt[f.test_list.subject] = 0
-            cnt[f.test_list.subject] += 1
-            for va in v:
-                cal[f.test_list.subject] += va
-    for key, value in cal.items():
-        print(key, cal[key], cnt[key])
-        cal[key] /= cnt[key]
-    return cal
+    try:
+        userCheckSet = UserCheck.objects.filter(user=user).select_related('test_list')
+        cal = {'우울 테스트': 0, '스트레스 테스트': 0, '불안 테스트': 0}
+        cnt = {'우울 테스트': 0, '스트레스 테스트': 0, '불안 테스트': 0}
+        for f in userCheckSet:
+            v = list(map(int, f.value.split(',')))
+            if f.test_list.id == 1:
+                cal['우울 테스트'] += (v[0] + v[1] + v[2]) * 10
+                cnt['우울 테스트'] += 1
+                cal['스트레스 테스트'] += (v[3] + v[4] + v[5]) * 10
+                cnt['스트레스 테스트'] += 1
+                cal['불안 테스트'] += (v[6] + v[7] + v[8]) * 10
+                cnt['불안 테스트'] += 1
+            else:
+                if f.test_list.subject not in cal:
+                    cal[f.test_list.subject] = 0
+                    cnt[f.test_list.subject] = 0
+                cnt[f.test_list.subject] += 1
+                for va in v:
+                    cal[f.test_list.subject] += va
+        for key, value in cal.items():
+            print(key, cal[key], cnt[key])
+            cal[key] /= cnt[key]
+        return cal
+    except:
+        raise ServiceUnavailable
 
 @transaction.atomic
 def get_user_goal_cal(user: User):
-    userGoalSet = UserGoal.objects.filter(user=user, success=1).select_related('goal', 'goal_category')
-    cnt = {}
-    for f in userGoalSet:
-        if f.goal.category_id not in cnt:
-            cnt[f.goal.category_id] = 0
-        cnt[f.goal.category_id] += 1
-    return cnt
+    try:
+        userGoalSet = UserGoal.objects.filter(user=user, success=1).select_related('goal')
+        category = GoalCategorySerializer(GoalCategory.objects.all(), many=True).data
+        to = {}
+        for c in category:
+            print(c)
+            to[c['id']] = c['subject']
+        cnt = {}
+        cnt2 = {}
+        for f in userGoalSet:
+            if f.goal.category_id not in cnt:
+                cnt[f.goal.category_id] = 0
+            cnt[f.goal.category_id] += 1
+        for key in cnt:
+            cnt2[to[key]] = cnt[key]
+        return cnt2
+    except:
+        raise ServiceUnavailable
 
 @transaction.atomic
 def set_user_check(user: User, **data):
