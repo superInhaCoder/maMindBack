@@ -178,10 +178,10 @@ class GoalListView(APIView):
                 except:
                         raise DataTypeIncorrect
                 d = GoalListSerializer(get_goal_list(**data), many=True).data
-                dic = UserGoalSerializer(get_user_goal_with_success(user, 0), many=True).data
+                lst = UserGoalSerializer(get_user_goal_with_success(user, 0), many=True).data
                 now = {}
-                for key in dic:
-                        now[dic[key].goal] = 1
+                for l in lst:
+                        now[l.goal] = 1
                 for x in d:
                         if x['id'] in now:
                                 x['now'] = 1
