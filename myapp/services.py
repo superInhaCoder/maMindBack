@@ -374,8 +374,8 @@ def get_user_goal_cal(user: User):
         for c in category:
             print(c)
             to[c['id']] = c['subject']
-        cnt = {"1": 0, "2": 0, "3": 0}
-        cnt2 = {}
+        cnt = {}
+        cnt2 = {'우울': 0, '스트레스': 0, '불안': 0}
         for f in userGoalSet:
             if f.goal.category_id not in cnt:
                 cnt[f.goal.category_id] = 0
