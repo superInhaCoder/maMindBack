@@ -140,8 +140,23 @@ class UserGoalView(APIView):
                         data['category']
                 except:
                         raise DataTypeIncorrect
-                create_user_goal(user, **data)
-                return JsonResponse({'good': 'good'})
+                d = {'goal_id': data['goal_id']}
+                create_user_goal(user, **d)
+                d = GoalListSerializer(get_goal_list(**data), many=True).data
+                lst = UserGoalSerializer(get_user_goal_with_success(user, 0), many=True).data
+                now = {}
+                try:
+                        for l in lst:
+                                now[l['goal']] = 1
+                        for x in d:
+                                if x['id'] in now:
+                                        x['now'] = 1
+                                else:
+                                        x['now'] = 0
+                except:
+                        raise ServiceUnavailable
+                        
+                return JsonResponse(d, safe=False)
 
         # 유저 목표 반환
         def get(self, request):
@@ -158,21 +173,8 @@ class UserGoalView(APIView):
                 except:
                         raise DataTypeIncorrect
                 set_user_goal(user=user, **data)
-                d = GoalListSerializer(get_goal_list(**data), many=True).data
-                lst = UserGoalSerializer(get_user_goal_with_success(user, 0), many=True).data
-                now = {}
-                try:
-                        for l in lst:
-                                now[l['goal']] = 1
-                        for x in d:
-                                if x['id'] in now:
-                                        x['now'] = 1
-                                else:
-                                        x['now'] = 0
-                except:
-                        raise ServiceUnavailable
-                        
-                return JsonResponse(d, safe=False)
+                
+                return JsonResponse({'good': 'good'})
         
 class TestListView(APIView):
         permission_classes = [IsAuthenticated]
