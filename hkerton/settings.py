@@ -65,6 +65,7 @@ CORS_ALLOW_HEADERS = (
 APPEND_SLASH = False #<- / 관련 에러 제거
 
 INSTALLED_APPS = [
+    'sslserver',
     'rest_framework',
     'myapp',
     'corsheaders',
