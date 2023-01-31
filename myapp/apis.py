@@ -88,7 +88,7 @@ class UserCheckView(APIView):
                 try:
                         data['value'] = ','.join(map(str, data['value']))
                         data['selected_date']
-                        data['test_list']
+                        data['test_list_id']
                 except:
                         raise DataTypeIncorrect
                 create_user_check(user, **data)
