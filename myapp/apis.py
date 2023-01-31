@@ -149,6 +149,12 @@ class UserGoalView(APIView):
         def get(self, request):
                 user, token = JWT_authenticator.authenticate(request)
                 s = UserGoalSerializer(get_user_goal(user), many=True).data
+                g = list(GoalListSerializer(GoalList.objects.all(), many=True).data)
+                d = {}
+                for x in g:
+                        d[x['id']] = x
+                for x in s:
+                        x['data'] = d[x['id']]
                 return JsonResponse(s, safe=False)
                 for dic in s:
                         dic['data'] = GoalListSerializer(GoalList.objects.filter(id=dic['id']), many=True).data
