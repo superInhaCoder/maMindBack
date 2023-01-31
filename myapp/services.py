@@ -324,11 +324,13 @@ def get_goal_category():
 @transaction.atomic
 def create_user_check(user: User, **data):
     userCheck = UserCheck(user=user, **data)
+    userCheck.save()
     return userCheck
 
 @transaction.atomic
 def create_user_goal(user: User, **data):
     userGoal = UserGoal(user=user, **data)
+    userGoal.save()
     userGoal.save()
 
 @transaction.atomic
