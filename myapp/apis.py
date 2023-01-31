@@ -12,6 +12,7 @@ from myapp.services import set_user_goal, get_user_goal, get_user_goal_with_succ
 from myapp.exceptions import ServiceUnavailable, DataTypeIncorrect, GoogleAuthError
 from django.core import serializers
 import requests, json, datetime, jwt
+from myapp.models import GoalList
 
 JWT_authenticator = JWTAuthentication()
 
@@ -147,7 +148,10 @@ class UserGoalView(APIView):
         # 유저 목표 반환
         def get(self, request):
                 user, token = JWT_authenticator.authenticate(request)
-                return JsonResponse(UserGoalSerializer(get_user_goal(user), many=True).data, safe=False)
+                s = UserGoalSerializer(get_user_goal(user), many=True).data
+                for dic in s:
+                        dic['data'] = GoalListSerializer(GoalList.objects.filter(id=dic['id']), many=True).data
+                return JsonResponse(dic, safe=False)
 
         # 유저 목표 업데이트
         def patch(self, request):
