@@ -41,7 +41,7 @@ AUTH_USER_MODEL = 'myapp.User'
 
 CORS_ORIGIN_ALLOW_ALL = True
 
-CORS_ORIGIN_WHITELIST = ['https://hyeonjin25.github.io']
+CORS_ORIGIN_WHITELIST = ['https://hyeonjin25.github.io:8999']
 CORS_ALLOW_CREDENTIALS = True
 '''
 CORS_ORIGIN_WHITELIST = (
